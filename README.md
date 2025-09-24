@@ -53,11 +53,13 @@ Then open your browser to:
 - **Webhook URL**: `https://primary-production-0556.up.railway.app/webhook/0f4c8c49-25b2-48b4-b781-a86ff354d504`
 - **Method**: GET (with query parameters)
 - **Status**: ✅ Already configured in the code
+- **Response Format**: ✅ Updated to handle n8n's array format
 
 #### Testing the Integration:
 1. Start your local server (see step 2 above)
 2. Open `http://localhost:8000/test-webhook.html`
 3. Click "Test n8n Webhook" to verify connectivity
+4. If successful, open `http://localhost:8000` for the main chat interface
 4. If successful, open `http://localhost:8000` for the main chat interface
 
 #### n8n Workflow Structure
@@ -74,8 +76,17 @@ Your n8n workflow should handle the incoming webhook data:
 
 **Expected Response Format:**
 ```json
+[
+  {
+    "text": "Bot's response text here"
+  }
+]
+```
+
+**Alternative Response Format (also supported):**
+```json
 {
-  "message": "Bot's response text"
+  "message": "Bot's response text here"
 }
 ```
 

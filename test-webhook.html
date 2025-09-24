@@ -78,7 +78,16 @@
                 }
 
                 const data = await response.json();
-                resultDiv.textContent = `SUCCESS!\n\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                
+                // Handle n8n response format: [{"text": "response"}]
+                let botMessage = 'No message found';
+                if (Array.isArray(data) && data.length > 0 && data[0].text) {
+                    botMessage = data[0].text;
+                } else if (data.message) {
+                    botMessage = data.message;
+                }
+                
+                resultDiv.textContent = `SUCCESS!\n\nStatus: ${response.status}\nBot Response: "${botMessage}"\n\nFull Response: ${JSON.stringify(data, null, 2)}`;
                 
             } catch (error) {
                 resultDiv.textContent = `ERROR!\n\n${error.message}\n\nThis could mean:\n1. n8n workflow is not active\n2. Webhook URL is incorrect\n3. CORS issues\n4. Network connectivity problems`;
