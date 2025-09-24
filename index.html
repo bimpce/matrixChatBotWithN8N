@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Chatbot Terminal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+New:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Matrix rain background -->
+    <canvas id="matrix-canvas"></canvas>
+    
+    <!-- Main container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="terminal-header">
+            <div class="terminal-title">
+                <span class="blink">█</span> MATRIX CHATBOT TERMINAL <span class="blink">█</span>
+            </div>
+            <div class="terminal-subtitle">
+                > Connecting to n8n neural network...
+            </div>
+        </header>
+
+        <!-- Chat interface -->
+        <main class="chat-container">
+            <!-- Chat messages area -->
+            <div class="chat-messages" id="chat-messages">
+                <div class="system-message">
+                    <span class="timestamp">[00:00:00]</span>
+                    <span class="message-text">System initialized. Welcome to the Matrix.</span>
+                </div>
+                <div class="system-message">
+                    <span class="timestamp">[00:00:01]</span>
+                    <span class="message-text">Chatbot connection established. Type your message below.</span>
+                </div>
+            </div>
+
+            <!-- Input area -->
+            <div class="input-container">
+                <div class="input-prompt">
+                    <span class="prompt-symbol">></span>
+                    <input type="text" id="message-input" placeholder="Enter your message..." autocomplete="off">
+                    <button id="send-button" type="button">SEND</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status bar -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <span class="status-indicator online"></span>
+                <span>ONLINE</span>
+            </div>
+            <div class="status-right">
+                <span id="message-count">Messages: 0</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

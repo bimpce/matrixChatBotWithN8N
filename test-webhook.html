@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n Webhook Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #00ff00;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        button {
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: rgba(0, 255, 0, 0.2);
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>n8n Webhook Test</h1>
+        <p>Test your n8n webhook integration before using the main chat interface.</p>
+        
+        <button onclick="testWebhook()">Test n8n Webhook</button>
+        <button onclick="clearResult()">Clear Result</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const webhookUrl = 'https://primary-production-0556.up.railway.app/webhook/0f4c8c49-25b2-48b4-b781-a86ff354d504';
+        
+        async function testWebhook() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Testing webhook...';
+            
+            try {
+                const params = new URLSearchParams({
+                    message: 'Hello from Matrix Terminal Test',
+                    timestamp: new Date().toISOString(),
+                    sessionId: 'test_session_' + Date.now()
+                });
+
+                const fullUrl = `${webhookUrl}?${params.toString()}`;
+                
+                const response = await fetch(fullUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                resultDiv.textContent = `SUCCESS!\n\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                
+            } catch (error) {
+                resultDiv.textContent = `ERROR!\n\n${error.message}\n\nThis could mean:\n1. n8n workflow is not active\n2. Webhook URL is incorrect\n3. CORS issues\n4. Network connectivity problems`;
+            }
+        }
+        
+        function clearResult() {
+            document.getElementById('result').textContent = '';
+        }
+    </script>
+</body>
+</html>
