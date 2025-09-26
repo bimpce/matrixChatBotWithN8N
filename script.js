@@ -56,19 +56,32 @@ class MatrixChatbot {
 
         try {
             // Send to n8n webhook
+            console.log('Sending message to n8n:', message);
             const response = await this.sendToN8n(message);
+            console.log('Received response from n8n:', response);
 
             // Remove typing indicator
             this.hideTypingIndicator();
 
-            // Add bot response - handle n8n response format: [{"text": "response"}]
-            if (response && Array.isArray(response) && response.length > 0 && response[0].text) {
+            // Remove typing indicator
+            this.hideTypingIndicator();
+
+            // Add bot response - handle n8n response format
+            if (response && response.text) {
+                // Direct object format: {"text": "response"}
+                console.log('Using direct text format response:', response.text);
+                this.addMessage(response.text, 'bot');
+            } else if (response && Array.isArray(response) && response.length > 0 && response[0].text) {
+                // Array format: [{"text": "response"}]
+                console.log('Using array format response:', response[0].text);
                 this.addMessage(response[0].text, 'bot');
             } else if (response && response.message) {
                 // Fallback for other response formats
+                console.log('Using message format response:', response.message);
                 this.addMessage(response.message, 'bot');
             } else {
                 // Fallback response if n8n response is unexpected
+                console.log('Using fallback response, unexpected format:', response);
                 this.addMessage(this.getFallbackResponse(message), 'bot');
             }
         } catch (error) {
@@ -91,6 +104,7 @@ class MatrixChatbot {
         });
 
         const fullUrl = `${this.n8nWebhookUrl}?${params.toString()}`;
+        console.log('Making request to:', fullUrl);
 
         const response = await fetch(fullUrl, {
             method: 'GET',
@@ -99,11 +113,16 @@ class MatrixChatbot {
             }
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return await response.json();
+        const jsonResponse = await response.json();
+        console.log('Parsed JSON response:', jsonResponse);
+        return jsonResponse;
     }
 
     getFallbackResponse(userMessage) {
