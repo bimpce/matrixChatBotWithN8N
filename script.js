@@ -20,6 +20,13 @@ class MatrixChatbot {
         this.messageCountElement = document.getElementById('message-count');
         this.canvas = document.getElementById('matrix-canvas');
         this.ctx = this.canvas.getContext('2d');
+
+        // Debug: Check if elements were found
+        console.log('Elements initialized:');
+        console.log('chatMessages:', this.chatMessages);
+        console.log('messageInput:', this.messageInput);
+        console.log('sendButton:', this.sendButton);
+        console.log('canvas:', this.canvas);
     }
 
     setupEventListeners() {
@@ -63,14 +70,13 @@ class MatrixChatbot {
             // Remove typing indicator
             this.hideTypingIndicator();
 
-            // Remove typing indicator
-            this.hideTypingIndicator();
-
             // Add bot response - handle n8n response format
             if (response && response.text) {
                 // Direct object format: {"text": "response"}
                 console.log('Using direct text format response:', response.text);
+                console.log('About to call addMessage with:', response.text, 'bot');
                 this.addMessage(response.text, 'bot');
+                console.log('addMessage called successfully');
             } else if (response && Array.isArray(response) && response.length > 0 && response[0].text) {
                 // Array format: [{"text": "response"}]
                 console.log('Using array format response:', response[0].text);
@@ -141,28 +147,33 @@ class MatrixChatbot {
     }
 
     addMessage(text, type) {
+        console.log('addMessage called with:', text, type);
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}-message`;
-        
+        console.log('Created messageDiv with class:', messageDiv.className);
+
         const timestamp = this.getCurrentTimestamp();
         const timestampSpan = document.createElement('span');
         timestampSpan.className = 'timestamp';
         timestampSpan.textContent = `[${timestamp}]`;
-        
+
         const messageText = document.createElement('span');
         messageText.className = 'message-text';
-        
+
         if (type === 'bot') {
             // Typewriter effect for bot messages
+            console.log('Starting typewriter effect for bot message');
             this.typewriterEffect(messageText, text);
         } else {
             messageText.textContent = text;
         }
-        
+
         messageDiv.appendChild(timestampSpan);
         messageDiv.appendChild(messageText);
-        
+
+        console.log('About to append messageDiv to chatMessages');
         this.chatMessages.appendChild(messageDiv);
+        console.log('Message appended successfully');
         this.scrollToBottom();
     }
 
@@ -352,7 +363,7 @@ class MatrixChatbot {
     }
 }
 
-// Initialize the chatbot when the page loads
+ // Initialize the chatbot when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     window.matrixChatbot = new MatrixChatbot();
 
@@ -361,4 +372,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Matrix Chatbot Terminal initialized');
     console.log('n8n webhook configured and ready');
+
+    // Test function to verify addMessage works
+    window.testAddMessage = function() {
+        console.log('Testing addMessage function...');
+        window.matrixChatbot.addMessage('This is a test bot message', 'bot');
+        console.log('Test message added');
+    };
+
+    // Add test message after 2 seconds
+    setTimeout(() => {
+        console.log('Adding test message automatically...');
+        window.matrixChatbot.addMessage('System test: Bot message display working!', 'bot');
+    }, 2000);
 });
