@@ -359,7 +359,7 @@ class MatrixChatbot {
     // Method to configure n8n webhook URL
     setN8nWebhookUrl(url) {
         this.n8nWebhookUrl = url;
-        console.log('n8n webhook URL configured:', url);
+        console.log('n8n webhook URL configured:', url ? 'URL set' : 'No URL provided');
     }
 }
 
@@ -367,11 +367,15 @@ class MatrixChatbot {
 document.addEventListener('DOMContentLoaded', () => {
     window.matrixChatbot = new MatrixChatbot();
 
-    // Configure your n8n webhook URL
-    window.matrixChatbot.setN8nWebhookUrl('https://primary-production-0556.up.railway.app/webhook/0f4c8c49-25b2-48b4-b781-a86ff354d504');
-
-    console.log('Matrix Chatbot Terminal initialized');
-    console.log('n8n webhook configured and ready');
+    // Configure n8n webhook URL from environment variable
+    const webhookUrl = window.ENV?.N8N_WEBHOOK_URL || '';
+    if (webhookUrl) {
+        window.matrixChatbot.setN8nWebhookUrl(webhookUrl);
+        console.log('Matrix Chatbot Terminal initialized with webhook');
+    } else {
+        console.warn('No webhook URL configured. Set N8N_WEBHOOK_URL environment variable.');
+        console.log('Matrix Chatbot Terminal initialized without webhook');
+    }
 
     // Test function to verify addMessage works
     window.testAddMessage = function() {

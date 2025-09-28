@@ -1,0 +1,13 @@
+{
+  "name": "matrix-chatbot-terminal",
+  "version": "1.0.0",
+  "description": "Matrix-themed chatbot terminal with n8n integration",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "python -m http.server 8000",
+    "start": "python -m http.server 8000"
+  },
+  "keywords": ["matrix", "chatbot", "n8n", "terminal", "webhook"],
+  "author": "",
+  "license": "MIT"
+}

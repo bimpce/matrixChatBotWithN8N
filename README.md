@@ -11,35 +11,42 @@ A Matrix-themed landing page for your n8n chatbot with a terminal-style interfac
 - 🔗 n8n webhook integration for chatbot communication
 - ⚡ Session management and message history
 - 🎨 Smooth animations and visual effects
+- 🔒 Secure environment variable configuration
 
-## Setup Instructions
-
-### 1. Files Structure
+## Files Structure
 ```
 matrix-chatbot/
 ├── index.html          # Main Matrix chatbot interface
 ├── styles.css          # Matrix terminal styling
 ├── script.js           # Chat functionality and Matrix effects
+├── config.js           # Environment configuration (auto-generated)
 ├── test-webhook.html   # n8n webhook testing page
+├── build.js            # Build script for deployment
+├── package.json        # Project configuration
+├── vercel.json         # Vercel deployment configuration
+├── .gitignore          # Git ignore rules
 └── README.md           # This file
 ```
 
-### 2. Local Development Server
+## Quick Start
 
-**Using Node.js (Recommended):**
+### 1. Local Development
+
+**Clone and setup:**
 ```bash
+git clone <your-repo-url>
+cd matrix-chatbot-terminal
+```
+
+**Start local server:**
+```bash
+# Using Node.js (Recommended)
 npx http-server -p 8000
-```
 
-**Using Python (if available):**
-```bash
+# Using Python
 python -m http.server 8000
-# or
-python3 -m http.server 8000
-```
 
-**Using PHP:**
-```bash
+# Using PHP
 php -S localhost:8000
 ```
 
@@ -47,138 +54,139 @@ Then open your browser to:
 - **Main Chat Interface**: `http://localhost:8000`
 - **Webhook Test Page**: `http://localhost:8000/test-webhook.html`
 
-### 3. n8n Integration Setup
+### 2. Environment Configuration
 
-#### Your Current Configuration:
-- **Webhook URL**: `https://primary-production-0556.up.railway.app/webhook/0f4c8c49-25b2-48b4-b781-a86ff354d504`
-- **Method**: GET (with query parameters)
-- **Status**: ✅ Already configured in the code
-- **Response Format**: ✅ Updated to handle n8n's array format
+#### For Local Development:
+1. Edit `config.js` and uncomment the development override:
+```javascript
+// For development, you can override these values
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.log('Development mode detected');
+    window.ENV.N8N_WEBHOOK_URL = 'your-n8n-webhook-url-here';
+}
+```
 
-#### Testing the Integration:
-1. Start your local server (see step 2 above)
-2. Open `http://localhost:8000/test-webhook.html`
+#### For Production (Vercel):
+Set environment variables in your Vercel dashboard:
+- `N8N_WEBHOOK_URL`: Your n8n webhook URL
+
+## Deployment
+
+### Deploy to Vercel
+
+1. **Push to GitHub:**
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
+
+2. **Connect to Vercel:**
+   - Go to [vercel.com](https://vercel.com)
+   - Import your GitHub repository
+   - Vercel will automatically detect the configuration
+
+3. **Set Environment Variables:**
+   - In Vercel dashboard, go to Project Settings → Environment Variables
+   - Add: `N8N_WEBHOOK_URL` with your webhook URL
+   - Deploy
+
+### Manual Vercel CLI Deployment
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login and deploy
+vercel login
+vercel --prod
+
+# Set environment variable
+vercel env add N8N_WEBHOOK_URL
+```
+
+## n8n Integration Setup
+
+### 1. Create n8n Workflow
+
+Your n8n workflow should include:
+
+1. **Webhook Node**: 
+   - Method: GET
+   - Receives query parameters: `message`, `timestamp`, `sessionId`
+
+2. **Processing Nodes**: 
+   - Add your AI/chatbot logic here
+   - Process the incoming message
+
+3. **Response Node**: 
+   - Return JSON response in format:
+   ```json
+   {
+     "response": "Your bot response here",
+     "timestamp": "2024-01-01T00:00:00.000Z"
+   }
+   ```
+
+### 2. Configure Webhook URL
+
+**For Local Development:**
+- Edit `config.js` and set your webhook URL in the development section
+
+**For Production:**
+- Set the `N8N_WEBHOOK_URL` environment variable in Vercel
+
+### 3. Test the Integration
+
+1. Start your local server or deploy to Vercel
+2. Open the webhook test page
 3. Click "Test n8n Webhook" to verify connectivity
-4. If successful, open `http://localhost:8000` for the main chat interface
-4. If successful, open `http://localhost:8000` for the main chat interface
+4. Check the main chat interface
 
-#### n8n Workflow Structure
-Your n8n workflow should handle the incoming webhook data:
+## Security Features
 
-**Expected Input Format:**
-```json
-{
-  "message": "User's message text",
-  "timestamp": "2024-01-01T12:00:00.000Z",
-  "sessionId": "session_1234567890_abcdef123"
-}
-```
-
-**Expected Response Format:**
-```json
-[
-  {
-    "text": "Bot's response text here"
-  }
-]
-```
-
-**Alternative Response Format (also supported):**
-```json
-{
-  "message": "Bot's response text here"
-}
-```
-
-### 3. Example n8n Workflow
-
-1. **Webhook Node**: Receives the POST request
-2. **Function Node**: Process the user message
-3. **HTTP Request Node**: Call your AI service (OpenAI, etc.)
-4. **Respond to Webhook Node**: Send response back to the chat
-
-### 4. Local Development
-
-To run locally, you can use any web server. For example:
-
-**Using Python:**
-```bash
-python -m http.server 8000
-```
-
-**Using Node.js (http-server):**
-```bash
-npx http-server
-```
-
-**Using PHP:**
-```bash
-php -S localhost:8000
-```
-
-Then open `http://localhost:8000` in your browser.
-
-### 5. Deployment
-
-You can deploy this to any static hosting service:
-- GitHub Pages
-- Netlify
-- Vercel
-- AWS S3
-- Any web server
-
-## Customization
-
-### Changing Colors
-Modify the CSS variables in `styles.css`:
-```css
-/* Change from green to blue Matrix theme */
-color: #00ffff; /* Cyan instead of green */
-border-color: #00ffff;
-text-shadow: 0 0 10px #00ffff;
-```
-
-### Adding Custom Messages
-Modify the `getFallbackResponse()` function in `script.js` to add your own fallback messages.
-
-### Styling the Chat
-All chat styling can be customized in the `styles.css` file. Look for these classes:
-- `.user-message` - User messages
-- `.bot-message` - Bot responses
-- `.system-message` - System notifications
-
-## Browser Compatibility
-
-- Chrome/Edge: Full support
-- Firefox: Full support
-- Safari: Full support
-- Mobile browsers: Responsive design included
-
-## Security Notes
-
-- Always use HTTPS for production deployments
-- Validate and sanitize user inputs in your n8n workflow
-- Consider implementing rate limiting
-- Store sensitive configuration in environment variables
+✅ **No hardcoded credentials** - All sensitive data uses environment variables  
+✅ **Secure deployment** - Webhook URLs are injected at build time  
+✅ **Development overrides** - Safe local development configuration  
+✅ **Git security** - Sensitive files excluded via .gitignore  
 
 ## Troubleshooting
 
-### Chat not connecting to n8n
-1. Check the webhook URL is correct
-2. Verify n8n workflow is active
-3. Check browser console for errors
-4. Ensure CORS is properly configured in n8n
+### Common Issues:
 
-### Matrix rain not showing
-1. Check if canvas is supported in your browser
-2. Verify JavaScript is enabled
-3. Check for console errors
+1. **"No webhook URL configured" error:**
+   - Check environment variable is set correctly
+   - For local dev: uncomment and set URL in config.js
+   - For production: verify Vercel environment variable
 
-### Styling issues
-1. Ensure all CSS files are loaded
-2. Check for conflicting styles
-3. Verify font loading (Courier New)
+2. **CORS errors:**
+   - Ensure your n8n workflow allows cross-origin requests
+   - Check n8n webhook node settings
+
+3. **Webhook not responding:**
+   - Verify n8n workflow is active
+   - Check webhook URL is correct
+   - Test webhook directly in n8n
+
+4. **Build failures on Vercel:**
+   - Check build.js script runs successfully
+   - Verify environment variables are set in Vercel dashboard
+
+## Development
+
+### Project Structure:
+- `index.html` - Main chat interface
+- `script.js` - Chat functionality and Matrix effects
+- `styles.css` - Matrix terminal styling
+- `config.js` - Environment configuration (auto-generated)
+- `build.js` - Build script for environment injection
+
+### Adding New Environment Variables:
+1. Add to `build.js` template
+2. Add to `config.js` template
+3. Update Vercel environment variables
+4. Redeploy
 
 ## License
 
-This project is open source and available under the MIT License.
+MIT License - feel free to use and modify as needed.

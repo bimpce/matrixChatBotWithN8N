@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>n8n Webhook Test</title>
+    <script src="config.js"></script>
     <style>
         body {
             font-family: 'Courier New', monospace;
@@ -51,12 +52,19 @@
     </div>
 
     <script>
-        const webhookUrl = 'https://primary-production-0556.up.railway.app/webhook/0f4c8c49-25b2-48b4-b781-a86ff354d504';
-        
+        // Get webhook URL from environment variable
+        const webhookUrl = window.ENV?.N8N_WEBHOOK_URL || '';
+
         async function testWebhook() {
             const resultDiv = document.getElementById('result');
+
+            if (!webhookUrl) {
+                resultDiv.textContent = 'ERROR!\n\nNo webhook URL configured.\nPlease set the N8N_WEBHOOK_URL environment variable.';
+                return;
+            }
+
             resultDiv.textContent = 'Testing webhook...';
-            
+
             try {
                 const params = new URLSearchParams({
                     message: 'Hello from Matrix Terminal Test',
@@ -65,7 +73,7 @@
                 });
 
                 const fullUrl = `${webhookUrl}?${params.toString()}`;
-                
+
                 const response = await fetch(fullUrl, {
                     method: 'GET',
                     headers: {
